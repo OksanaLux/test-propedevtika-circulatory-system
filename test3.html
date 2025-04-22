@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Тест по пропедевтике: система кровообращения</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+      color: #333;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .question {
+      font-weight: bold;
+      margin-top: 20px;
+      text-align: left;
+    }
+    .options {
+      margin-top: 10px;
+      text-align: left;
+    }
+    .option {
+      margin-bottom: 8px;
+      text-align: left;
+    }
+    #next-btn, #start-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #timer {
+      font-weight: bold;
+      color: darkred;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .intro {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="intro">
+    <h1>Тест по пропедевтике: система кровообращения</h1>
+    <p>Количество вопросов: 10</p>
+    <p>Ограничение по времени на каждый вопрос: 30 секунд.</p>
+    <button id="start-btn">Начать</button>
+  </div>
+
+  <div id="quiz" style="display: none;">
+    <h1>Тест по пропедевтике: система кровообращения</h1>
+    <div id="timer">Осталось: 30</div>
+    <div id="question-container"></div>
+  </div>
+
+  <button id="next-btn" style="display: none;">Следующий</button>
+
+  <script>
+    const questions = [
+      {
+        question: "Что включает в себя объективное исследование системы кровообращения?",
+        options: [
+          "Только перкуссию и аускультацию",
+          "Только пульс и давление",
+          "Осмотр, пальпацию, перкуссию, аускультацию, определение пульса и давления",
+          "Только ЭКГ"
+        ],
+        correct: 2
+      },
+      {
+        question: "Какой основной инструмент используется для выслушивания сердца?",
+        options: ["Тонометр", "ЭКГ-аппарат", "Фонендоскоп", "Пульсометр"],
+        correct: 2
+      },
+      {
+        question: "Что может указывать на декомпенсацию сердечной деятельности?",
+        options: [
+          "Активный образ жизни",
+          "Одышка в покое",
+          "Повышенное настроение",
+          "Сухость кожи"
+        ],
+        correct: 1
+      },
+      {
+        question: "Как называется положение, характерное для сердечной недостаточности?",
+        options: ["Ортостаз", "Ортопное", "Ателектаз", "Положение Симса"],
+        correct: 1
+      },
+      {
+        question: "Какой метод диагностики позволяет определить границы сердца?",
+        options: ["Аускультация", "Осмотр", "Пальпация", "Перкуссия"],
+        correct: 3
+      },
+      {
+        question: "Где проходит правая граница относительной сердечной тупости у здорового человека?",
+        options: [
+          "По левой парастернальной линии",
+          "На 1 см кнаружи от правого края грудины",
+          "По правому краю грудины",
+          "На уровне третьего межреберья"
+        ],
+        correct: 2
+      },
+      {
+        question: "Какое изменение тона наиболее характерно для митрального стеноза?",
+        options: [
+          "Ослабление первого тона",
+          "Усиление второго тона над аортой",
+          "Хлопающий первый тон на верхушке",
+          "Усиление обоих тонов"
+        ],
+        correct: 2
+      },
+      {
+        question: "Где локализован верхушечный толчок при нормальной конфигурации сердца?",
+        options: [
+          "В пятом межреберье по срединной линии",
+          "В четвёртом межреберье на 2 см кнаружи от левой границы грудины",
+          "В пятом межреберье на 1-2 см кнутри от среднеключичной линии",
+          "В пятом межреберье на 1-2 см кнаружи от среднеключичной линии"
+        ],
+        correct: 2
+      },
+      {
+        question: "Какой шум наиболее типичен для недостаточности митрального клапана?",
+        options: [
+          "Систолический шум на верхушке с иррадиацией в подмышку",
+          "Диастолический шум у основания сердца",
+          "Шум трения перикарда",
+          "Систолический шум над аортой"
+        ],
+        correct: 0
+      },
+      {
+        question: "Как изменяется положение границы относительной тупости сердца при гипертрофии левого желудочка?",
+        options: [
+          "Смещается вверх",
+          "Смещается вправо",
+          "Смещается влево и вниз",
+          "Не изменяется"
+        ],
+        correct: 2
+      }
+    ];
+
+    let shuffled = questions.sort(() => Math.random() - 0.5);
+    let current = 0;
+    let score = 0;
+    let seconds = 30;
+    let timer;
+    const quiz = document.getElementById("quiz");
+    const questionContainer = document.getElementById("question-container");
+    const nextBtn = document.getElementById("next-btn");
+    const startBtn = document.getElementById("start-btn");
+    const timeDisplay = document.getElementById("timer");
+    let selectedAnswers = [];
+
+    startBtn.addEventListener("click", function () {
+      document.querySelector(".intro").style.display = "none";
+      quiz.style.display = "block";
+      nextBtn.style.display = "block";
+      showQuestion(current);
+    });
+
+    function showQuestion(index) {
+      clearInterval(timer);
+      seconds = 30;
+      timeDisplay.textContent = "Осталось: " + seconds;
+
+      const q = shuffled[index];
+      let html = `<div class="question">${q.question}</div><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<div class="option">
+                  <label><input type="radio" name="answer" value="${i}"> ${opt}</label>
+                </div>`;
+      });
+      html += `</div>`;
+      questionContainer.innerHTML = html;
+      nextBtn.disabled = true;
+
+      document.querySelectorAll('input[name="answer"]').forEach(input => {
+        input.addEventListener('change', () => {
+          nextBtn.disabled = false;
+        });
+      });
+
+      startTimer();
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        seconds--;
+        timeDisplay.textContent = "Осталось: " + seconds;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          autoNext();
+        }
+      }, 1000);
+    }
+
+    function autoNext() {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      const userAnswer = selected ? parseInt(selected.value) : -1;
+      selectedAnswers.push(userAnswer);
+
+      if (userAnswer === shuffled[current].correct) {
+        score++;
+      }
+
+      current++;
+      if (current < shuffled.length) {
+        showQuestion(current);
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      clearInterval(timer);
+      quiz.innerHTML = `<h2>Результат</h2><p>Вы набрали ${score} из ${shuffled.length}</p>`;
+      shuffled.forEach((q, index) => {
+        const userAnswer = selectedAnswers[index];
+        const correctText = q.options[q.correct];
+        const userText = userAnswer !== -1 ? q.options[userAnswer] : "не выбран";
+        const resultText = userAnswer === q.correct ? "Правильно!" : `Ошибка! Правильный ответ: ${correctText}`;
+        quiz.innerHTML += `<p>${index + 1}. ${q.question}<br>Ваш ответ: ${userText} (${resultText})</p>`;
+      });
+      nextBtn.style.display = "none";
+      timeDisplay.style.display = "none";
+    }
+
+    nextBtn.addEventListener("click", autoNext);
+  </script>
+</body>
+</html>
